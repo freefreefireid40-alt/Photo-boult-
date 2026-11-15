@@ -114,9 +114,8 @@ async function tryOpenFolder(){
     const snap = await getDocs(q);
     if(!snap.empty){
       const f = snap.docs[0].data();
-      renderMain({type:'ok', text:'সঠিক পাসওয়ার্ড! নিচে ক্লিক করুন।'});
-      document.getElementById("linkArea").innerHTML =
-        `<a class="open-link" href="${f.link}" target="_blank" rel="noopener">${f.label || 'ফোল্ডার'} খুলুন</a>`;
+      renderMain({type:'ok', text:'সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...'});
+      window.location.href = f.link;
     }else{
       renderMain({type:'err', text:'পাসওয়ার্ড মেলেনি।'});
     }
