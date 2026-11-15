@@ -69,9 +69,7 @@
     <div style="text-align:center;">লোড হচ্ছে...</div>
   </div>
 </div>
-<div id="cornerAdmin" style="position:fixed; bottom:10px; right:14px; z-index:2;">
-  <a href="#" id="cornerAdminLink" style="font-size:11px; color:rgba(126,232,166,0.5); text-decoration:none; font-family:'Courier New',monospace;">admin</a>
-</div>
+<div id="cornerAdminLink" style="position:fixed; z-index:9999; pointer-events:auto; font-size:13px; color:rgba(0,255,157,0.55); text-shadow:0 0 6px rgba(0,255,157,0.5); font-family:'Courier New',monospace; cursor:pointer; padding:10px; user-select:none;">admin</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -110,7 +108,20 @@ function renderMain(msg){
   document.getElementById("openBtn").onclick = tryOpenFolder;
   document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryOpenFolder(); });
 }
-document.getElementById("cornerAdminLink").onclick = (e) => { e.preventDefault(); renderAdminLogin(); };
+const adminLink = document.getElementById("cornerAdminLink");
+adminLink.addEventListener("click", (e) => { e.preventDefault(); renderAdminLogin(); });
+adminLink.addEventListener("touchend", (e) => { e.preventDefault(); renderAdminLogin(); });
+
+function moveAdminLink(){
+  const margin = 20;
+  const w = window.innerWidth, h = window.innerHeight;
+  const x = margin + Math.random() * (w - margin*2 - 50);
+  const y = margin + Math.random() * (h - margin*2 - 30);
+  adminLink.style.left = x + "px";
+  adminLink.style.top = y + "px";
+}
+moveAdminLink();
+setInterval(moveAdminLink, 4000);
 
 async function tryOpenFolder(){
   const pw = document.getElementById("pwInput").value.trim();
