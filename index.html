@@ -6,61 +6,71 @@
 <title>ফটো ভল্ট</title>
 <style>
   :root{
-    --bg:#f4f5f7; --card:#ffffff; --text:#1a1a1a; --muted:#666;
-    --accent:#2563eb; --accent-text:#fff; --border:#e2e4e8; --danger:#dc2626;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#17181c; --card:#222327; --text:#f0f0f0; --muted:#9a9a9a;
-      --accent:#3b82f6; --accent-text:#fff; --border:#35363c; --danger:#f87171;
-    }
+    --card:rgba(10,14,20,0.82); --text:#eafff1; --muted:#7ee8a6;
+    --accent:#00ff9d; --accent-text:#031b10; --border:rgba(0,255,157,0.35); --danger:#ff5d5d;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;margin:0;}
   body{
-    background:var(--bg); color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:#02060a; color:var(--text); overflow:hidden;
+    font-family:'Courier New',monospace;
+  }
+  #matrix{ position:fixed; inset:0; z-index:0; display:block; }
+  .wrap{
+    position:relative; z-index:1; min-height:100%;
     display:flex; align-items:center; justify-content:center; padding:20px;
   }
   .card{
-    background:var(--card); border:1px solid var(--border); border-radius:16px;
-    padding:28px 24px; width:100%; max-width:380px;
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:30px 26px; width:100%; max-width:380px;
+    backdrop-filter:blur(6px); box-shadow:0 0 30px rgba(0,255,157,0.15);
   }
-  h1{font-size:19px; margin:0 0 6px; text-align:center;}
-  p.sub{color:var(--muted); font-size:13px; text-align:center; margin:0 0 20px;}
+  h1{
+    font-size:20px; margin:0 0 6px; text-align:center; letter-spacing:2px;
+    color:var(--accent); text-shadow:0 0 10px rgba(0,255,157,0.6);
+  }
+  p.sub{color:var(--muted); font-size:13px; text-align:center; margin:0 0 22px; opacity:0.85;}
   input{
-    width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--border);
-    background:transparent; color:var(--text); font-size:15px; margin-bottom:10px;
+    width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border);
+    background:rgba(0,0,0,0.4); color:var(--accent); font-size:16px; margin-bottom:12px;
+    font-family:'Courier New',monospace; letter-spacing:1px;
   }
-  input::placeholder{color:var(--muted);}
+  input::placeholder{color:rgba(126,232,166,0.5);}
+  input:focus{outline:none; box-shadow:0 0 0 2px var(--accent);}
   button{
-    width:100%; padding:12px; border-radius:10px; border:none;
-    background:var(--accent); color:var(--accent-text); font-size:15px; font-weight:600;
-    cursor:pointer; margin-top:4px;
+    width:100%; padding:13px; border-radius:10px; border:none;
+    background:var(--accent); color:var(--accent-text); font-size:15px; font-weight:700;
+    cursor:pointer; margin-top:4px; letter-spacing:1px;
+    box-shadow:0 0 15px rgba(0,255,157,0.4);
   }
-  button.secondary{background:transparent; color:var(--accent); font-weight:500; font-size:13px; padding:8px;}
-  .msg{font-size:13px; text-align:center; margin-top:10px; min-height:18px;}
+  button.secondary{
+    background:transparent; color:var(--muted); font-weight:500; font-size:12px;
+    padding:6px; box-shadow:none; margin-top:0; text-decoration:underline;
+  }
+  .msg{font-size:13px; text-align:center; margin-top:12px; min-height:18px;}
   .msg.err{color:var(--danger);}
-  .msg.ok{color:#16a34a;}
-  .row{display:flex; justify-content:center; margin-top:14px;}
+  .msg.ok{color:var(--accent);}
+  .row{display:flex; justify-content:flex-end; margin-top:18px;}
   .folder-item{
     display:flex; justify-content:space-between; align-items:center;
     border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:8px;
   }
   .folder-item div{font-size:14px;}
-  .folder-item .del{background:transparent; color:var(--danger); width:auto; padding:4px 10px; margin:0; font-size:13px;}
+  .folder-item .del{background:transparent; color:var(--danger); width:auto; padding:4px 10px; margin:0; font-size:13px; box-shadow:none;}
   hr{border:none; border-top:1px solid var(--border); margin:18px 0;}
-  a.open-link{
-    display:block; text-align:center; margin-top:14px; padding:12px; border-radius:10px;
-    background:var(--accent); color:var(--accent-text); text-decoration:none; font-weight:600;
-  }
   .back{font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline;}
 </style>
 </head>
 <body>
 
-<div class="card" id="app">
-  <div style="text-align:center;">লোড হচ্ছে...</div>
+<canvas id="matrix"></canvas>
+<div class="wrap">
+  <div class="card" id="app">
+    <div style="text-align:center;">লোড হচ্ছে...</div>
+  </div>
+</div>
+<div id="cornerAdmin" style="position:fixed; bottom:10px; right:14px; z-index:2;">
+  <a href="#" id="cornerAdminLink" style="font-size:11px; color:rgba(126,232,166,0.5); text-decoration:none; font-family:'Courier New',monospace;">admin</a>
 </div>
 
 <script type="module">
@@ -96,14 +106,11 @@ function renderMain(msg){
     <button id="openBtn">ওপেন করুন</button>
     <div class="msg ${msg && msg.type==='err' ? 'err':'ok'}">${msg ? msg.text : ''}</div>
     <div id="linkArea"></div>
-    <div class="row">
-      <button class="secondary" id="adminLinkBtn">এডমিন পাসওয়ার্ড</button>
-    </div>
   `;
   document.getElementById("openBtn").onclick = tryOpenFolder;
   document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryOpenFolder(); });
-  document.getElementById("adminLinkBtn").onclick = renderAdminLogin;
 }
+document.getElementById("cornerAdminLink").onclick = (e) => { e.preventDefault(); renderAdminLogin(); };
 
 async function tryOpenFolder(){
   const pw = document.getElementById("pwInput").value.trim();
@@ -224,6 +231,37 @@ async function addFolder(){
 }
 
 renderMain();
+
+// ---- ম্যাট্রিক্স ব্যাকগ্রাউন্ড অ্যানিমেশন ----
+(function(){
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+  let w, h, cols, drops;
+  const chars = "01アイウエオカキクケコサシスセソタチツテト".split("");
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    cols = Math.floor(w / 16);
+    drops = new Array(cols).fill(1);
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function draw(){
+    ctx.fillStyle = "rgba(2,6,10,0.08)";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#00ff9d";
+    ctx.font = "14px monospace";
+    for(let i=0; i<drops.length; i++){
+      const text = chars[Math.floor(Math.random()*chars.length)];
+      ctx.fillText(text, i*16, drops[i]*16);
+      if(drops[i]*16 > h && Math.random() > 0.975){ drops[i] = 0; }
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 50);
+})();
 </script>
 </body>
 </html>
