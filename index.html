@@ -104,9 +104,78 @@ function renderMain(msg){
     <button id="openBtn">ওপেন করুন</button>
     <div class="msg ${msg && msg.type==='err' ? 'err':'ok'}">${msg ? msg.text : ''}</div>
     <div id="linkArea"></div>
+    <button class="secondary" id="browseBtn" style="margin-top:14px;">ফোল্ডার তালিকা থেকে খুঁজুন</button>
   `;
   document.getElementById("openBtn").onclick = tryOpenFolder;
   document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryOpenFolder(); });
+  document.getElementById("browseBtn").onclick = renderFolderBrowse;
+}
+
+async function renderFolderBrowse(){
+  app.innerHTML = `
+    <h1>ফোল্ডার তালিকা</h1>
+    <p class="sub">কাঙ্ক্ষিত ফোল্ডারে ক্লিক করুন</p>
+    <div id="browseList"><p class="sub">লোড হচ্ছে...</p></div>
+    <div class="back" id="browseBack">মূল পেজে ফিরে যান</div>
+  `;
+  document.getElementById("browseBack").onclick = () => renderMain();
+  const listEl = document.getElementById("browseList");
+  try{
+    const snap = await getDocs(collection(db, "folders"));
+    if(snap.empty){
+      listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`;
+      return;
+    }
+    listEl.innerHTML = "";
+    snap.forEach(d=>{
+      const f = d.data();
+      const btn = document.createElement("button");
+      btn.textContent = f.label || d.id;
+      btn.style.marginBottom = "8px";
+      btn.onclick = () => renderFolderPasswordScreen(d.id, f);
+      listEl.appendChild(btn);
+    });
+  }catch(e){
+    listEl.innerHTML = `<p class="sub">লোড করা যায়নি।</p>`;
+  }
+}
+
+function renderFolderPasswordScreen(folderId, f){
+  app.innerHTML = `
+    <h1>${f.label || folderId}</h1>
+    <p class="sub">এই ফোল্ডারের পাসওয়ার্ড দিন</p>
+    <input id="fpwInput" type="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off">
+    <button id="fpwOpenBtn">ওপেন করুন</button>
+    <div class="msg err" id="fpwMsg"></div>
+    ${f.hint ? `<button class="secondary" id="hintBtn" style="margin-top:10px;">হিন্ট দেখুন</button><div class="msg ok" id="hintText" style="display:none;"></div>` : ''}
+    <div class="back" id="fpwBack">ফোল্ডার তালিকায় ফিরে যান</div>
+  `;
+  document.getElementById("fpwBack").onclick = renderFolderBrowse;
+  const tryIt = async () => {
+    const pw = document.getElementById("fpwInput").value.trim();
+    const msgEl = document.getElementById("fpwMsg");
+    if(!pw) return;
+    try{
+      const hash = await sha256(pw);
+      if(hash === f.passHash){
+        msgEl.className = "msg ok"; msgEl.textContent = "সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...";
+        window.location.href = f.link;
+      }else{
+        msgEl.className = "msg err"; msgEl.textContent = "পাসওয়ার্ড মেলেনি।";
+      }
+    }catch(e){
+      msgEl.className = "msg err"; msgEl.textContent = "সমস্যা হয়েছে।";
+    }
+  };
+  document.getElementById("fpwOpenBtn").onclick = tryIt;
+  document.getElementById("fpwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryIt(); });
+  if(f.hint){
+    document.getElementById("hintBtn").onclick = () => {
+      const h = document.getElementById("hintText");
+      h.style.display = "block";
+      h.textContent = f.hint;
+    };
+  }
 }
 const adminLink = document.getElementById("cornerAdminLink");
 adminLink.addEventListener("click", (e) => { e.preventDefault(); renderAdminLogin(); });
@@ -186,6 +255,7 @@ function renderAdminPanel(){
     <input id="newLabel" placeholder="নাম (যেমন: রাহিমের ছবি)">
     <input id="newPw" placeholder="পাসওয়ার্ড">
     <input id="newLink" placeholder="ব্লগার লিংক">
+    <input id="newHint" placeholder="হিন্ট (ঐচ্ছিক)">
     <button id="addBtn">যোগ করুন</button>
     <div class="msg" id="addMsg"></div>
     <div class="back" id="backBtn2">মূল পেজে ফিরে যান</div>
@@ -208,33 +278,78 @@ async function loadFolderList(){
       const f = d.data();
       const row = document.createElement("div");
       row.className = "folder-item";
-      row.innerHTML = `<div>${f.label || d.id}</div><button class="del" data-id="${d.id}">মুছুন</button>`;
+      row.innerHTML = `<div>${f.label || d.id}</div>
+        <div>
+          <button class="del" data-id="${d.id}" data-act="edit" style="color:var(--accent);">এডিট</button>
+          <button class="del" data-id="${d.id}" data-act="del">মুছুন</button>
+        </div>`;
       listEl.appendChild(row);
     });
-    listEl.querySelectorAll(".del").forEach(btn=>{
+    listEl.querySelectorAll("[data-act='del']").forEach(btn=>{
       btn.onclick = async ()=>{
         try{ await deleteDoc(doc(db, "folders", btn.dataset.id)); loadFolderList(); }catch(e){}
       };
+    });
+    listEl.querySelectorAll("[data-act='edit']").forEach(btn=>{
+      btn.onclick = () => openEditForm(btn.dataset.id);
     });
   }catch(e){
     listEl.innerHTML = `<p class="sub">ফোল্ডার লোড করা যায়নি।</p>`;
   }
 }
 
+async function openEditForm(folderId){
+  const listEl = document.getElementById("folderList");
+  try{
+    const snap = await getDoc(doc(db, "folders", folderId));
+    if(!snap.exists()) return;
+    const f = snap.data();
+    listEl.innerHTML = `
+      <p class="sub" style="margin-bottom:8px;">এডিট করুন: ${f.label || folderId}</p>
+      <input id="editLabel" value="${f.label || ''}" placeholder="নাম">
+      <input id="editPw" placeholder="নতুন পাসওয়ার্ড (খালি রাখলে আগেরটাই থাকবে)">
+      <input id="editLink" value="${f.link || ''}" placeholder="ব্লগার লিংক">
+      <input id="editHint" value="${f.hint || ''}" placeholder="হিন্ট (ঐচ্ছিক)">
+      <button id="saveEditBtn">সেভ করুন</button>
+      <div class="msg" id="editMsg"></div>
+      <div class="back" id="cancelEditBtn">বাতিল করুন</div>
+    `;
+    document.getElementById("cancelEditBtn").onclick = loadFolderList;
+    document.getElementById("saveEditBtn").onclick = async () => {
+      const msgEl = document.getElementById("editMsg");
+      const label = document.getElementById("editLabel").value.trim();
+      const link = document.getElementById("editLink").value.trim();
+      const hint = document.getElementById("editHint").value.trim();
+      const newPw = document.getElementById("editPw").value.trim();
+      try{
+        const update = { label, link, hint, passHash: f.passHash };
+        if(newPw){ update.passHash = await sha256(newPw); }
+        await setDoc(doc(db, "folders", folderId), update);
+        msgEl.className = "msg ok"; msgEl.textContent = "সেভ হয়েছে!";
+        setTimeout(loadFolderList, 600);
+      }catch(e){
+        msgEl.className = "msg err"; msgEl.textContent = "সেভ করা যায়নি।";
+      }
+    };
+  }catch(e){}
+}
+
 async function addFolder(){
   const label = document.getElementById("newLabel").value.trim();
   const pw = document.getElementById("newPw").value.trim();
   const link = document.getElementById("newLink").value.trim();
+  const hint = document.getElementById("newHint").value.trim();
   const msgEl = document.getElementById("addMsg");
   if(!label || !pw || !link){ msgEl.className="msg err"; msgEl.textContent="সবগুলো ঘর পূরণ করুন।"; return; }
   try{
     const hash = await sha256(pw);
     const slug = "f" + Date.now();
-    await setDoc(doc(db, "folders", slug), { label, passHash: hash, link });
+    await setDoc(doc(db, "folders", slug), { label, passHash: hash, link, hint });
     msgEl.className="msg ok"; msgEl.textContent="যোগ হয়েছে!";
     document.getElementById("newLabel").value="";
     document.getElementById("newPw").value="";
     document.getElementById("newLink").value="";
+    document.getElementById("newHint").value="";
     loadFolderList();
   }catch(e){
     msgEl.className="msg err"; msgEl.textContent="যোগ করা যায়নি।";
