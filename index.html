@@ -59,6 +59,30 @@
   .folder-item .del{background:transparent; color:var(--danger); width:auto; padding:4px 10px; margin:0; font-size:13px; box-shadow:none;}
   hr{border:none; border-top:1px solid var(--border); margin:18px 0;}
   .back{font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline;}
+
+  /* ---- এডমিন মোড: সাদাসিধা, নরমাল ---- */
+  body.admin-mode{ background:#f2f3f5; }
+  .card.plain{
+    background:#ffffff; border:1px solid #e2e4e8; box-shadow:0 2px 14px rgba(0,0,0,0.08);
+    backdrop-filter:none;
+  }
+  .card.plain h1{ color:#1a1a1a; text-shadow:none; font-family:-apple-system,sans-serif; }
+  .card.plain p.sub{ color:#777; }
+  .card.plain input{
+    background:#f7f7f8; color:#1a1a1a; font-family:-apple-system,sans-serif; letter-spacing:normal;
+  }
+  .card.plain input::placeholder{ color:#999; }
+  .card.plain button{
+    background:#2563eb; color:#fff; box-shadow:none; font-family:-apple-system,sans-serif;
+  }
+  .card.plain button.secondary, .card.plain .back{ color:#2563eb; text-shadow:none; }
+  .card.plain .folder-item{ border-color:#e2e4e8; }
+  #homeBtn{
+    position:fixed; top:14px; left:14px; z-index:9999; display:none;
+    background:#2563eb; color:#fff; border:none; border-radius:20px;
+    padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer;
+    font-family:-apple-system,sans-serif; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  }
 </style>
 </head>
 <body>
@@ -70,6 +94,7 @@
   </div>
 </div>
 <div id="cornerAdminLink" style="position:fixed; z-index:9999; pointer-events:auto; font-size:13px; color:rgba(0,255,157,0.55); text-shadow:0 0 6px rgba(0,255,157,0.5); font-family:'Courier New',monospace; cursor:pointer; padding:10px; user-select:none;">admin</div>
+<button id="homeBtn">← মূল পেজে ফিরুন</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -177,6 +202,24 @@ function renderFolderPasswordScreen(folderId, f){
     };
   }
 }
+const matrixCanvas = document.getElementById("matrix");
+const homeBtn = document.getElementById("homeBtn");
+function enterAdminMode(){
+  document.body.classList.add("admin-mode");
+  matrixCanvas.style.display = "none";
+  document.getElementById("cornerAdminLink").style.display = "none";
+  homeBtn.style.display = "block";
+  app.classList.add("plain");
+}
+function exitAdminMode(){
+  document.body.classList.remove("admin-mode");
+  matrixCanvas.style.display = "block";
+  document.getElementById("cornerAdminLink").style.display = "block";
+  homeBtn.style.display = "none";
+  app.classList.remove("plain");
+}
+homeBtn.onclick = () => { exitAdminMode(); renderMain(); };
+
 const adminLink = document.getElementById("cornerAdminLink");
 adminLink.addEventListener("click", (e) => { e.preventDefault(); renderAdminLogin(); });
 adminLink.addEventListener("touchend", (e) => { e.preventDefault(); renderAdminLogin(); });
@@ -212,6 +255,7 @@ async function tryOpenFolder(){
 }
 
 function renderAdminLogin(){
+  enterAdminMode();
   app.innerHTML = `
     <h1>এডমিন লগইন</h1>
     <p class="sub">এডমিন পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
@@ -220,7 +264,7 @@ function renderAdminLogin(){
     <div class="msg err" id="adminMsg"></div>
     <div class="back" id="backBtn">ফিরে যান</div>
   `;
-  document.getElementById("backBtn").onclick = () => renderMain();
+  document.getElementById("backBtn").onclick = () => { exitAdminMode(); renderMain(); };
   document.getElementById("adminGoBtn").onclick = adminLogin;
   document.getElementById("adminPw").addEventListener("keydown", e=>{ if(e.key==="Enter") adminLogin(); });
 }
@@ -260,7 +304,7 @@ function renderAdminPanel(){
     <div class="msg" id="addMsg"></div>
     <div class="back" id="backBtn2">মূল পেজে ফিরে যান</div>
   `;
-  document.getElementById("backBtn2").onclick = () => renderMain();
+  document.getElementById("backBtn2").onclick = () => { exitAdminMode(); renderMain(); };
   document.getElementById("addBtn").onclick = addFolder;
   loadFolderList();
 }
