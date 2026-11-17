@@ -5,102 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ফটো ভল্ট</title>
 <style>
-  :root{
-    --card:rgba(10,14,20,0.82); --text:#eafff1; --muted:#7ee8a6;
-    --accent:#00ff9d; --accent-text:#031b10; --border:rgba(0,255,157,0.35); --danger:#ff5d5d;
-  }
+  :root{--card:rgba(10,14,20,0.82);--text:#eafff1;--muted:#7ee8a6;--accent:#00ff9d;--accent-text:#031b10;--border:rgba(0,255,157,0.35);--danger:#ff5d5d;}
   *{box-sizing:border-box;}
   html,body{height:100%;margin:0;}
-  body{
-    background:#02060a; color:var(--text); overflow:hidden;
-    font-family:'Courier New',monospace;
-  }
-  #matrix{ position:fixed; inset:0; z-index:0; display:block; }
-  .wrap{
-    position:relative; z-index:1; min-height:100%;
-    display:flex; align-items:center; justify-content:center; padding:20px;
-  }
-  .card{
-    background:var(--card); border:1px solid var(--border); border-radius:18px;
-    padding:30px 26px; width:100%; max-width:380px;
-    backdrop-filter:blur(6px); box-shadow:0 0 30px rgba(0,255,157,0.15);
-  }
-  h1{
-    font-size:20px; margin:0 0 6px; text-align:center; letter-spacing:2px;
-    color:var(--accent); text-shadow:0 0 10px rgba(0,255,157,0.6);
-  }
-  p.sub{color:var(--muted); font-size:13px; text-align:center; margin:0 0 22px; opacity:0.85;}
-  input{
-    width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border);
-    background:rgba(0,0,0,0.4); color:var(--accent); font-size:16px; margin-bottom:12px;
-    font-family:'Courier New',monospace; letter-spacing:1px;
-  }
+  body{background:#02060a;color:var(--text);overflow:hidden;font-family:'Courier New',monospace;}
+  #matrix{position:fixed;inset:0;z-index:0;display:block;}
+  .wrap{position:relative;z-index:1;min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px 26px;width:100%;max-width:380px;backdrop-filter:blur(6px);box-shadow:0 0 30px rgba(0,255,157,0.15);max-height:92vh;overflow-y:auto;}
+  h1{font-size:20px;margin:0 0 6px;text-align:center;letter-spacing:2px;color:var(--accent);text-shadow:0 0 10px rgba(0,255,157,0.6);}
+  p.sub{color:var(--muted);font-size:13px;text-align:center;margin:0 0 22px;opacity:0.85;}
+  input{width:100%;padding:13px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(0,0,0,0.4);color:var(--accent);font-size:16px;margin-bottom:12px;font-family:'Courier New',monospace;letter-spacing:1px;}
   input::placeholder{color:rgba(126,232,166,0.5);}
-  input:focus{outline:none; box-shadow:0 0 0 2px var(--accent);}
-  button{
-    width:100%; padding:13px; border-radius:10px; border:none;
-    background:var(--accent); color:var(--accent-text); font-size:15px; font-weight:700;
-    cursor:pointer; margin-top:4px; letter-spacing:1px;
-    box-shadow:0 0 15px rgba(0,255,157,0.4);
-  }
-  button.secondary{
-    background:transparent; color:var(--muted); font-weight:500; font-size:12px;
-    padding:6px; box-shadow:none; margin-top:0; text-decoration:underline;
-  }
-  .msg{font-size:13px; text-align:center; margin-top:12px; min-height:18px;}
-  .msg.err{color:var(--danger);}
-  .msg.ok{color:var(--accent);}
-  .row{display:flex; justify-content:flex-end; margin-top:18px;}
-  .folder-item{
-    display:flex; justify-content:space-between; align-items:center;
-    border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:8px;
-  }
+  input:focus{outline:none;box-shadow:0 0 0 2px var(--accent);}
+  button{width:100%;padding:13px;border-radius:10px;border:none;background:var(--accent);color:var(--accent-text);font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;letter-spacing:1px;box-shadow:0 0 15px rgba(0,255,157,0.4);}
+  button.secondary{background:transparent;color:var(--muted);font-weight:500;font-size:12px;padding:6px;box-shadow:none;margin-top:0;text-decoration:underline;}
+  .msg{font-size:13px;text-align:center;margin-top:12px;min-height:18px;}
+  .msg.err{color:var(--danger);} .msg.ok{color:var(--accent);}
+  .folder-item{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
   .folder-item div{font-size:14px;}
-  .folder-item .del{background:transparent; color:var(--danger); width:auto; padding:4px 10px; margin:0; font-size:13px; box-shadow:none;}
-  hr{border:none; border-top:1px solid var(--border); margin:18px 0;}
-  .back{font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline;}
-
-  /* ---- এডমিন মোড: সাদাসিধা, নরমাল ---- */
-  body.admin-mode{ background:#f2f3f5; }
-  .card.plain{
-    background:#ffffff; border:1px solid #e2e4e8; box-shadow:0 2px 14px rgba(0,0,0,0.08);
-    backdrop-filter:none;
-  }
-  .card.plain h1{ color:#1a1a1a; text-shadow:none; font-family:-apple-system,sans-serif; }
-  .card.plain p.sub{ color:#777; }
-  .card.plain input{
-    background:#f7f7f8; color:#1a1a1a; font-family:-apple-system,sans-serif; letter-spacing:normal;
-  }
-  .card.plain input::placeholder{ color:#999; }
-  .card.plain button{
-    background:#2563eb; color:#fff; box-shadow:none; font-family:-apple-system,sans-serif;
-  }
-  .card.plain button.secondary, .card.plain .back{ color:#2563eb; text-shadow:none; }
-  .card.plain .folder-item{ border-color:#e2e4e8; }
-  #homeBtn{
-    position:fixed; top:14px; left:14px; z-index:9999; display:none;
-    background:#2563eb; color:#fff; border:none; border-radius:20px;
-    padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer;
-    font-family:-apple-system,sans-serif; box-shadow:0 2px 8px rgba(0,0,0,0.15);
-  }
+  .folder-item .del{background:transparent;color:var(--danger);width:auto;padding:4px 10px;margin:0;font-size:13px;box-shadow:none;}
+  hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
+  .back{font-size:13px;color:var(--muted);text-align:center;margin-top:16px;cursor:pointer;text-decoration:underline;}
+  body.admin-mode{background:#f2f3f5;}
+  .card.plain{background:#fff;border:1px solid #e2e4e8;box-shadow:0 2px 14px rgba(0,0,0,0.08);backdrop-filter:none;}
+  .card.plain h1{color:#1a1a1a;text-shadow:none;font-family:-apple-system,sans-serif;}
+  .card.plain p.sub{color:#777;}
+  .card.plain input{background:#f7f7f8;color:#1a1a1a;font-family:-apple-system,sans-serif;letter-spacing:normal;}
+  .card.plain input::placeholder{color:#999;}
+  .card.plain button{background:#2563eb;color:#fff;box-shadow:none;font-family:-apple-system,sans-serif;}
+  .card.plain button.secondary,.card.plain .back{color:#2563eb;text-shadow:none;}
+  .card.plain button.secondary{background:transparent;}
+  .card.plain .folder-item{border-color:#e2e4e8;}
+  .card.plain .msg.ok{color:#16a34a;}
+  #homeBtn{position:fixed;top:14px;left:14px;z-index:9999;display:none;background:#2563eb;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif;width:auto;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
 </style>
 </head>
 <body>
-
 <canvas id="matrix"></canvas>
-<div class="wrap">
-  <div class="card" id="app">
-    <div style="text-align:center;">লোড হচ্ছে...</div>
-  </div>
-</div>
-<div id="cornerAdminLink" style="position:fixed; z-index:9999; pointer-events:auto; font-size:13px; color:rgba(0,255,157,0.55); text-shadow:0 0 6px rgba(0,255,157,0.5); font-family:'Courier New',monospace; cursor:pointer; padding:10px; user-select:none;">admin</div>
+<div class="wrap"><div class="card" id="app"><div style="text-align:center;">লোড হচ্ছে...</div></div></div>
+<div id="cornerAdminLink" style="position:fixed;z-index:9999;pointer-events:auto;font-size:13px;color:rgba(0,255,157,0.55);text-shadow:0 0 6px rgba(0,255,157,0.5);font-family:'Courier New',monospace;cursor:pointer;padding:10px;user-select:none;">admin</div>
 <button id="homeBtn">← মূল পেজে ফিরুন</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, limit
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBOkwwmcpI-iyg0A4jqZMISWYLBWdZYUxk",
@@ -110,9 +58,16 @@ const firebaseConfig = {
   messagingSenderId: "331515261814",
   appId: "1:331515261814:web:d6465ba76ebebe0acc8057"
 };
-
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
+// বাংলাদেশ সময় (UTC+6) অনুযায়ী প্রতি মিনিটে বদলানো ৮ অঙ্কের কোড
+async function timeCode(secret, offsetMin){
+  const t = new Date(Date.now() + 6*3600e3 + offsetMin*60000).toISOString().slice(0,16).replace(/\D/g,"");
+  const e = new TextEncoder();
+  const k = await crypto.subtle.importKey("raw", e.encode(secret), {name:"HMAC",hash:"SHA-256"}, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", k, e.encode(t));
+  return String(new DataView(sig).getUint32(0) % 100000000).padStart(8,"0");
+}
 
 async function sha256(text){
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -128,7 +83,6 @@ function renderMain(msg){
     <input id="pwInput" type="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off">
     <button id="openBtn">ওপেন করুন</button>
     <div class="msg ${msg && msg.type==='err' ? 'err':'ok'}">${msg ? msg.text : ''}</div>
-    <div id="linkArea"></div>
     <button class="secondary" id="browseBtn" style="margin-top:14px;">ফোল্ডার তালিকা থেকে খুঁজুন</button>
   `;
   document.getElementById("openBtn").onclick = tryOpenFolder;
@@ -147,22 +101,17 @@ async function renderFolderBrowse(){
   const listEl = document.getElementById("browseList");
   try{
     const snap = await getDocs(collection(db, "folders"));
-    if(snap.empty){
-      listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`;
-      return;
-    }
+    if(snap.empty){ listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`; return; }
     listEl.innerHTML = "";
     snap.forEach(d=>{
-      const f = d.data();
+      const f = d.data(); f.id = d.id;
       const btn = document.createElement("button");
       btn.textContent = f.label || d.id;
       btn.style.marginBottom = "8px";
-      btn.onclick = () => renderFolderPasswordScreen(d.id, f);
+      btn.onclick = () => renderFolderPasswordScreen(f.id, f);
       listEl.appendChild(btn);
     });
-  }catch(e){
-    listEl.innerHTML = `<p class="sub">লোড করা যায়নি।</p>`;
-  }
+  }catch(e){ listEl.innerHTML = `<p class="sub">লোড করা যায়নি।</p>`; }
 }
 
 function renderFolderPasswordScreen(folderId, f){
@@ -181,8 +130,7 @@ function renderFolderPasswordScreen(folderId, f){
     const msgEl = document.getElementById("fpwMsg");
     if(!pw) return;
     try{
-      const hash = await sha256(pw);
-      if(hash === f.passHash){
+      if((await sha256(pw)) === f.passHash){
         msgEl.className = "msg ok"; msgEl.textContent = "সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...";
         window.location.href = f.link;
       }else{
@@ -197,11 +145,27 @@ function renderFolderPasswordScreen(folderId, f){
   if(f.hint){
     document.getElementById("hintBtn").onclick = () => {
       const h = document.getElementById("hintText");
-      h.style.display = "block";
-      h.textContent = f.hint;
+      h.style.display = "block"; h.textContent = f.hint;
     };
   }
 }
+
+async function tryOpenFolder(){
+  const pw = document.getElementById("pwInput").value.trim();
+  if(!pw) return;
+  try{
+    const snap = await getDocs(query(collection(db, "folders"), where("passHash","==",await sha256(pw)), limit(1)));
+    if(!snap.empty){
+      renderMain({type:'ok', text:'সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...'});
+      window.location.href = snap.docs[0].data().link;
+    }else{
+      renderMain({type:'err', text:'পাসওয়ার্ড মেলেনি।'});
+    }
+  }catch(e){
+    renderMain({type:'err', text:'সমস্যা হয়েছে, আবার চেষ্টা করুন।'});
+  }
+}
+
 const matrixCanvas = document.getElementById("matrix");
 const homeBtn = document.getElementById("homeBtn");
 function enterAdminMode(){
@@ -223,43 +187,20 @@ homeBtn.onclick = () => { exitAdminMode(); renderMain(); };
 const adminLink = document.getElementById("cornerAdminLink");
 adminLink.addEventListener("click", (e) => { e.preventDefault(); renderAdminLogin(); });
 adminLink.addEventListener("touchend", (e) => { e.preventDefault(); renderAdminLogin(); });
-
 function moveAdminLink(){
-  const margin = 20;
-  const w = window.innerWidth, h = window.innerHeight;
-  const x = margin + Math.random() * (w - margin*2 - 50);
-  const y = margin + Math.random() * (h - margin*2 - 30);
-  adminLink.style.left = x + "px";
-  adminLink.style.top = y + "px";
+  const margin = 20, w = window.innerWidth, h = window.innerHeight;
+  adminLink.style.left = (margin + Math.random() * (w - margin*2 - 50)) + "px";
+  adminLink.style.top = (margin + Math.random() * (h - margin*2 - 30)) + "px";
 }
 moveAdminLink();
 setInterval(moveAdminLink, 4000);
-
-async function tryOpenFolder(){
-  const pw = document.getElementById("pwInput").value.trim();
-  if(!pw) return;
-  try{
-    const hash = await sha256(pw);
-    const q = query(collection(db, "folders"), where("passHash","==",hash), limit(1));
-    const snap = await getDocs(q);
-    if(!snap.empty){
-      const f = snap.docs[0].data();
-      renderMain({type:'ok', text:'সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...'});
-      window.location.href = f.link;
-    }else{
-      renderMain({type:'err', text:'পাসওয়ার্ড মেলেনি।'});
-    }
-  }catch(e){
-    renderMain({type:'err', text:'সমস্যা হয়েছে, আবার চেষ্টা করুন।'});
-  }
-}
 
 function renderAdminLogin(){
   enterAdminMode();
   app.innerHTML = `
     <h1>এডমিন লগইন</h1>
-    <p class="sub">এডমিন পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
-    <input id="adminPw" type="password" placeholder="এডমিন পাসওয়ার্ড">
+    <p class="sub">এই মুহূর্তের ৮ অঙ্কের কোড দিন (প্রতি মিনিটে বদলায়)। প্রথমবার হলে এখানে নিজের সিক্রেট লিখুন।</p>
+    <input id="adminPw" type="password" placeholder="৮ অঙ্কের কোড / প্রথমবার: সিক্রেট">
     <button id="adminGoBtn">প্রবেশ করুন</button>
     <div class="msg err" id="adminMsg"></div>
     <div class="back" id="backBtn">ফিরে যান</div>
@@ -274,16 +215,17 @@ async function adminLogin(){
   const msgEl = document.getElementById("adminMsg");
   if(!pw) return;
   try{
-    const hash = await sha256(pw);
     const ref = doc(db, "admin", "config");
     const snap = await getDoc(ref);
-    if(!snap.exists() || !snap.data().passHash){
-      await setDoc(ref, { passHash: hash });
+    const secret = snap.exists() ? snap.data().secret : null;
+    if(!secret){
+      if(pw.length < 6){ msgEl.textContent = "সিক্রেট কমপক্ষে ৬ অক্ষর হতে হবে।"; return; }
+      await setDoc(ref, { secret: pw });
       renderAdminPanel();
-    }else if(snap.data().passHash === hash){
+    }else if(pw === await timeCode(secret,0) || pw === await timeCode(secret,-1)){
       renderAdminPanel();
     }else{
-      msgEl.textContent = "ভুল পাসওয়ার্ড।";
+      msgEl.textContent = "ভুল কোড।";
     }
   }catch(e){
     msgEl.textContent = "সমস্যা হয়েছে, আবার চেষ্টা করুন।";
@@ -302,21 +244,35 @@ function renderAdminPanel(){
     <input id="newHint" placeholder="হিন্ট (ঐচ্ছিক)">
     <button id="addBtn">যোগ করুন</button>
     <div class="msg" id="addMsg"></div>
+    <hr>
+    <p class="sub" style="margin-bottom:8px;">সিক্রেট কোড বদলান (এডমিন লগইনের জন্য)</p>
+    <input id="newSecret" placeholder="নতুন সিক্রেট (কমপক্ষে ৬ অক্ষর)">
+    <button id="secretBtn">সিক্রেট সেভ করুন</button>
+    <div class="msg" id="secretMsg"></div>
     <div class="back" id="backBtn2">মূল পেজে ফিরে যান</div>
   `;
   document.getElementById("backBtn2").onclick = () => { exitAdminMode(); renderMain(); };
   document.getElementById("addBtn").onclick = addFolder;
+  document.getElementById("secretBtn").onclick = saveSecret;
   loadFolderList();
+}
+
+async function saveSecret(){
+  const v = document.getElementById("newSecret").value.trim();
+  const m = document.getElementById("secretMsg");
+  try{
+    if(v.length < 6){ m.className = "msg err"; m.textContent = "কমপক্ষে ৬ অক্ষর দিন।"; return; }
+    await setDoc(doc(db, "admin", "config"), { secret: v });
+    m.className = "msg ok"; m.textContent = "সিক্রেট বদলে গেছে! জেনারেটর পেজেও একই সিক্রেট দিন।";
+    document.getElementById("newSecret").value = "";
+  }catch(e){ m.className = "msg err"; m.textContent = "সেভ করা যায়নি।"; }
 }
 
 async function loadFolderList(){
   const listEl = document.getElementById("folderList");
   try{
     const snap = await getDocs(collection(db, "folders"));
-    if(snap.empty){
-      listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`;
-      return;
-    }
+    if(snap.empty){ listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`; return; }
     listEl.innerHTML = "";
     snap.forEach(d=>{
       const f = d.data();
@@ -324,22 +280,16 @@ async function loadFolderList(){
       row.className = "folder-item";
       row.innerHTML = `<div>${f.label || d.id}</div>
         <div>
-          <button class="del" data-id="${d.id}" data-act="edit" style="color:var(--accent);">এডিট</button>
+          <button class="del" data-id="${d.id}" data-act="edit" style="color:#2563eb;">এডিট</button>
           <button class="del" data-id="${d.id}" data-act="del">মুছুন</button>
         </div>`;
       listEl.appendChild(row);
     });
     listEl.querySelectorAll("[data-act='del']").forEach(btn=>{
-      btn.onclick = async ()=>{
-        try{ await deleteDoc(doc(db, "folders", btn.dataset.id)); loadFolderList(); }catch(e){}
-      };
+      btn.onclick = async ()=>{ try{ await deleteDoc(doc(db, "folders", btn.dataset.id)); loadFolderList(); }catch(e){} };
     });
-    listEl.querySelectorAll("[data-act='edit']").forEach(btn=>{
-      btn.onclick = () => openEditForm(btn.dataset.id);
-    });
-  }catch(e){
-    listEl.innerHTML = `<p class="sub">ফোল্ডার লোড করা যায়নি।</p>`;
-  }
+    listEl.querySelectorAll("[data-act='edit']").forEach(btn=>{ btn.onclick = () => openEditForm(btn.dataset.id); });
+  }catch(e){ listEl.innerHTML = `<p class="sub">ফোল্ডার লোড করা যায়নি।</p>`; }
 }
 
 async function openEditForm(folderId){
@@ -371,9 +321,7 @@ async function openEditForm(folderId){
         await setDoc(doc(db, "folders", folderId), update);
         msgEl.className = "msg ok"; msgEl.textContent = "সেভ হয়েছে!";
         setTimeout(loadFolderList, 600);
-      }catch(e){
-        msgEl.className = "msg err"; msgEl.textContent = "সেভ করা যায়নি।";
-      }
+      }catch(e){ msgEl.className = "msg err"; msgEl.textContent = "সেভ করা যায়নি।"; }
     };
   }catch(e){}
 }
@@ -387,50 +335,31 @@ async function addFolder(){
   if(!label || !pw || !link){ msgEl.className="msg err"; msgEl.textContent="সবগুলো ঘর পূরণ করুন।"; return; }
   try{
     const hash = await sha256(pw);
-    const slug = "f" + Date.now();
-    await setDoc(doc(db, "folders", slug), { label, passHash: hash, link, hint });
+    await setDoc(doc(db, "folders", "f" + Date.now()), { label, passHash: hash, link, hint });
     msgEl.className="msg ok"; msgEl.textContent="যোগ হয়েছে!";
-    document.getElementById("newLabel").value="";
-    document.getElementById("newPw").value="";
-    document.getElementById("newLink").value="";
-    document.getElementById("newHint").value="";
+    ["newLabel","newPw","newLink","newHint"].forEach(i=>document.getElementById(i).value="");
     loadFolderList();
-  }catch(e){
-    msgEl.className="msg err"; msgEl.textContent="যোগ করা যায়নি।";
-  }
+  }catch(e){ msgEl.className="msg err"; msgEl.textContent="যোগ করা যায়নি।"; }
 }
 
 renderMain();
 
-// ---- ম্যাট্রিক্স ব্যাকগ্রাউন্ড অ্যানিমেশন ----
 (function(){
   const canvas = document.getElementById("matrix");
   const ctx = canvas.getContext("2d");
   let w, h, cols, drops;
   const chars = "01アイウエオカキクケコサシスセソタチツテト".split("");
-
-  function resize(){
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-    cols = Math.floor(w / 16);
-    drops = new Array(cols).fill(1);
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  function draw(){
-    ctx.fillStyle = "rgba(2,6,10,0.08)";
-    ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = "#00ff9d";
-    ctx.font = "14px monospace";
-    for(let i=0; i<drops.length; i++){
-      const text = chars[Math.floor(Math.random()*chars.length)];
-      ctx.fillText(text, i*16, drops[i]*16);
-      if(drops[i]*16 > h && Math.random() > 0.975){ drops[i] = 0; }
+  function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; cols = Math.floor(w/16); drops = new Array(cols).fill(1); }
+  addEventListener("resize", resize); resize();
+  setInterval(()=>{
+    ctx.fillStyle = "rgba(2,6,10,0.08)"; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = "#00ff9d"; ctx.font = "14px monospace";
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*16, drops[i]*16);
+      if(drops[i]*16 > h && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     }
-  }
-  setInterval(draw, 50);
+  }, 50);
 })();
 </script>
 </body>
