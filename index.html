@@ -90,11 +90,11 @@
 <canvas id="matrix"></canvas>
 <div class="wrap">
   <div class="card" id="app">
-    <div style="text-align:center;">লোড হচ্ছে...</div>
+    <div style="text-align:center;">অপেক্ষা করেন আপনি কোনো নেতা নন...</div>
   </div>
 </div>
 <div id="cornerAdminLink" style="position:fixed; z-index:9999; pointer-events:auto; font-size:13px; color:rgba(0,255,157,0.55); text-shadow:0 0 6px rgba(0,255,157,0.5); font-family:'Courier New',monospace; cursor:pointer; padding:10px; user-select:none;">admin</div>
-<button id="homeBtn">← মূল পেজে ফিরুন</button>
+<button id="homeBtn">← আগের জায়গায় যান এটা আপনার বাপের না</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -125,11 +125,11 @@ function renderMain(msg){
   app.innerHTML = `
     <h1>ফটো ভল্ট</h1>
     <p class="sub">পাসওয়ার্ড দিয়ে ফোল্ডার দেখুন</p>
-    <input id="pwInput" type="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off">
+    <input id="pwInput" type="password" placeholder="পাসওয়ার্ড টা লেখ দয়াকরে" autocomplete="off">
     <button id="openBtn">ওপেন করুন</button>
     <div class="msg ${msg && msg.type==='err' ? 'err':'ok'}">${msg ? msg.text : ''}</div>
     <div id="linkArea"></div>
-    <button class="secondary" id="browseBtn" style="margin-top:14px;">ফোল্ডার তালিকা থেকে খুঁজুন</button>
+    <button class="secondary" id="browseBtn" style="margin-top:14px;">দেখেন এখানে কিছু পেতে পারেন</button>
   `;
   document.getElementById("openBtn").onclick = tryOpenFolder;
   document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryOpenFolder(); });
@@ -141,7 +141,7 @@ async function renderFolderBrowse(){
     <h1>ফোল্ডার তালিকা</h1>
     <p class="sub">কাঙ্ক্ষিত ফোল্ডারে ক্লিক করুন</p>
     <div id="browseList"><p class="sub">লোড হচ্ছে...</p></div>
-    <div class="back" id="browseBack">মূল পেজে ফিরে যান</div>
+    <div class="back" id="browseBack">আগের জায়গায় যা এটা কি তর বাপের জায়গা</div>
   `;
   document.getElementById("browseBack").onclick = () => renderMain();
   const listEl = document.getElementById("browseList");
@@ -168,12 +168,12 @@ async function renderFolderBrowse(){
 function renderFolderPasswordScreen(folderId, f){
   app.innerHTML = `
     <h1>${f.label || folderId}</h1>
-    <p class="sub">এই ফোল্ডারের পাসওয়ার্ড দিন</p>
+    <p class="sub">এই ফোল্ডারের পাসওয়ার্ড দে নয়লে ডুকতে পাবিনা</p>
     <input id="fpwInput" type="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off">
-    <button id="fpwOpenBtn">ওপেন করুন</button>
+    <button id="fpwOpenBtn">খুল এখন</button>
     <div class="msg err" id="fpwMsg"></div>
     ${f.hint ? `<button class="secondary" id="hintBtn" style="margin-top:10px;">হিন্ট দেখুন</button><div class="msg ok" id="hintText" style="display:none;"></div>` : ''}
-    <div class="back" id="fpwBack">ফোল্ডার তালিকায় ফিরে যান</div>
+    <div class="back" id="fpwBack">ফোল্ডার তালিকায় ফিরত যা তর বাপের না এই জায়গা</div>
   `;
   document.getElementById("fpwBack").onclick = renderFolderBrowse;
   const tryIt = async () => {
@@ -183,13 +183,13 @@ function renderFolderPasswordScreen(folderId, f){
     try{
       const hash = await sha256(pw);
       if(hash === f.passHash){
-        msgEl.className = "msg ok"; msgEl.textContent = "সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...";
+        msgEl.className = "msg ok"; msgEl.textContent = "পাসওয়ার্ড ঠিক আছে ! তর ফোল্ডার এ নিয়ে যাওয়া হচ্ছে...";
         window.location.href = f.link;
       }else{
-        msgEl.className = "msg err"; msgEl.textContent = "পাসওয়ার্ড মেলেনি।";
+        msgEl.className = "msg err"; msgEl.textContent = "পাসওয়ার্ড মিলেনি কেন 🤔 তুই চোর নয়তো ।";
       }
     }catch(e){
-      msgEl.className = "msg err"; msgEl.textContent = "সমস্যা হয়েছে।";
+      msgEl.className = "msg err"; msgEl.textContent = "জারোর কোচ না কোচ গারাবর হে দয়া ।";
     }
   };
   document.getElementById("fpwOpenBtn").onclick = tryIt;
@@ -244,25 +244,25 @@ async function tryOpenFolder(){
     const snap = await getDocs(q);
     if(!snap.empty){
       const f = snap.docs[0].data();
-      renderMain({type:'ok', text:'সঠিক পাসওয়ার্ড! নিয়ে যাওয়া হচ্ছে...'});
+      renderMain({type:'ok', text:'পাসওয়ার্ড ঠিক আছে! তর ফোল্ডার এ নিয়ে যাওয়া হচ্ছে...'});
       window.location.href = f.link;
     }else{
-      renderMain({type:'err', text:'পাসওয়ার্ড মেলেনি।'});
+      renderMain({type:'err', text:'পাসওয়ার্ড মেলেনি কেন 🤔 তুই আবার চুর নয়তো।'});
     }
   }catch(e){
-    renderMain({type:'err', text:'সমস্যা হয়েছে, আবার চেষ্টা করুন।'});
+    renderMain({type:'err', text:'কিছু তো একটা হয়েছে , আবার চেষ্টা কর ।'});
   }
 }
 
 function renderAdminLogin(){
   enterAdminMode();
   app.innerHTML = `
-    <h1>এডমিন লগইন</h1>
-    <p class="sub">এডমিন পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
+    <h1>মালিকানাধীন </h1>
+    <p class="sub"<পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
     <input id="adminPw" type="password" placeholder="এডমিন পাসওয়ার্ড">
     <button id="adminGoBtn">প্রবেশ করুন</button>
     <div class="msg err" id="adminMsg"></div>
-    <div class="back" id="backBtn">ফিরে যান</div>
+    <div class="back" id="backBtn">ফিরত যা</div>
   `;
   document.getElementById("backBtn").onclick = () => { exitAdminMode(); renderMain(); };
   document.getElementById("adminGoBtn").onclick = adminLogin;
@@ -283,10 +283,10 @@ async function adminLogin(){
     }else if(snap.data().passHash === hash){
       renderAdminPanel();
     }else{
-      msgEl.textContent = "ভুল পাসওয়ার্ড।";
+      msgEl.textContent = "তুই কি চোর তাহলে পাসওয়ার্ড ভুল কেন।";
     }
   }catch(e){
-    msgEl.textContent = "সমস্যা হয়েছে, আবার চেষ্টা করুন।";
+    msgEl.textContent = "সমস্যা হয়েছে, আবার চেষ্টা কর।";
   }
 }
 
@@ -296,13 +296,13 @@ function renderAdminPanel(){
     <div id="folderList"><p class="sub">লোড হচ্ছে...</p></div>
     <hr>
     <p class="sub" style="margin-bottom:8px;">নতুন ফোল্ডার যোগ করুন</p>
-    <input id="newLabel" placeholder="নাম (যেমন: রাহিমের ছবি)">
+    <input id="newLabel" placeholder="নাম (যেমন: জুনাইদ এর ছবি)">
     <input id="newPw" placeholder="পাসওয়ার্ড">
     <input id="newLink" placeholder="ব্লগার লিংক">
     <input id="newHint" placeholder="হিন্ট (ঐচ্ছিক)">
     <button id="addBtn">যোগ করুন</button>
     <div class="msg" id="addMsg"></div>
-    <div class="back" id="backBtn2">মূল পেজে ফিরে যান</div>
+    <div class="back" id="backBtn2">আগের জায়গায় যা</div>
   `;
   document.getElementById("backBtn2").onclick = () => { exitAdminMode(); renderMain(); };
   document.getElementById("addBtn").onclick = addFolder;
