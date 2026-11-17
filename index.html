@@ -10,14 +10,14 @@
     --accent:#00ff9d; --accent-text:#031b10; --border:rgba(0,255,157,0.35); --danger:#ff5d5d;
   }
   *{box-sizing:border-box;}
-  html,body{height:100%;margin:0;}
+  html,body{min-height:100%;margin:0;}
   body{
-    background:#02060a; color:var(--text); overflow:hidden;
+    background:#02060a; color:var(--text); overflow-x:hidden; overflow-y:auto;
     font-family:'Courier New',monospace;
   }
-  #matrix{ position:fixed; inset:0; z-index:0; display:block; }
+  #matrix{ position:fixed; inset:0; z-index:0; display:block; pointer-events:none; }
   .wrap{
-    position:relative; z-index:1; min-height:100%;
+    position:relative; z-index:1; min-height:100vh;
     display:flex; align-items:center; justify-content:center; padding:20px;
   }
   .card{
@@ -29,13 +29,13 @@
     font-size:20px; margin:0 0 6px; text-align:center; letter-spacing:2px;
     color:var(--accent); text-shadow:0 0 10px rgba(0,255,157,0.6);
   }
-  p.sub{color:var(--muted); font-size:13px; text-align:center; margin:0 0 22px; opacity:0.85;}
+  p.sub{color:var(--muted); font-size:13px; text-align:center; margin:0 0 22px; opacity:0.85; line-height:1.4;}
   input{
     width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border);
     background:rgba(0,0,0,0.4); color:var(--accent); font-size:16px; margin-bottom:12px;
     font-family:'Courier New',monospace; letter-spacing:1px;
   }
-  input::placeholder{color:rgba(126,232,166,0.5);}
+  input::placeholder{color:rgba(126,232,166,0.5); font-size:14px;}
   input:focus{outline:none; box-shadow:0 0 0 2px var(--accent);}
   button{
     width:100%; padding:13px; border-radius:10px; border:none;
@@ -47,7 +47,7 @@
     background:transparent; color:var(--muted); font-weight:500; font-size:12px;
     padding:6px; box-shadow:none; margin-top:0; text-decoration:underline;
   }
-  .msg{font-size:13px; text-align:center; margin-top:12px; min-height:18px;}
+  .msg{font-size:13px; text-align:center; margin-top:12px; min-height:18px; line-height:1.4;}
   .msg.err{color:var(--danger);}
   .msg.ok{color:var(--accent);}
   .row{display:flex; justify-content:flex-end; margin-top:18px;}
@@ -58,13 +58,13 @@
   .folder-item div{font-size:14px;}
   .folder-item .del{background:transparent; color:var(--danger); width:auto; padding:4px 10px; margin:0; font-size:13px; box-shadow:none;}
   hr{border:none; border-top:1px solid var(--border); margin:18px 0;}
-  .back{font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline;}
+  .back{font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline; line-height:1.4;}
 
   /* ---- এডমিন মোড: সাদাসিধা, নরমাল ---- */
   body.admin-mode{ background:#f2f3f5; }
   .card.plain{
     background:#ffffff; border:1px solid #e2e4e8; box-shadow:0 2px 14px rgba(0,0,0,0.08);
-    backdrop-filter:none;
+    backdrop-filter:none; margin-top:36px;
   }
   .card.plain h1{ color:#1a1a1a; text-shadow:none; font-family:-apple-system,sans-serif; }
   .card.plain p.sub{ color:#777; }
@@ -76,12 +76,13 @@
     background:#2563eb; color:#fff; box-shadow:none; font-family:-apple-system,sans-serif;
   }
   .card.plain button.secondary, .card.plain .back{ color:#2563eb; text-shadow:none; }
-  .card.plain .folder-item{ border-color:#e2e4e8; }
+  .card.plain .folder-item{ border-color:#e2e4e8; color:#1a1a1a; }
   #homeBtn{
     position:fixed; top:14px; left:14px; z-index:9999; display:none;
     background:#2563eb; color:#fff; border:none; border-radius:20px;
-    padding:8px 16px; font-size:13px; font-weight:600; cursor:pointer;
+    padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer;
     font-family:-apple-system,sans-serif; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    width:auto; margin:0;
   }
 </style>
 </head>
@@ -202,6 +203,7 @@ function renderFolderPasswordScreen(folderId, f){
     };
   }
 }
+
 const matrixCanvas = document.getElementById("matrix");
 const homeBtn = document.getElementById("homeBtn");
 function enterAdminMode(){
@@ -227,8 +229,8 @@ adminLink.addEventListener("touchend", (e) => { e.preventDefault(); renderAdminL
 function moveAdminLink(){
   const margin = 20;
   const w = window.innerWidth, h = window.innerHeight;
-  const x = margin + Math.random() * (w - margin*2 - 50);
-  const y = margin + Math.random() * (h - margin*2 - 30);
+  const x = margin + Math.random() * Math.max(10, w - margin*2 - 60);
+  const y = margin + Math.random() * Math.max(10, h - margin*2 - 40);
   adminLink.style.left = x + "px";
   adminLink.style.top = y + "px";
 }
@@ -257,8 +259,8 @@ async function tryOpenFolder(){
 function renderAdminLogin(){
   enterAdminMode();
   app.innerHTML = `
-    <h1>মালিকানাধীন </h1>
-    <p class="sub"<পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
+    <h1>মালিকানাধীন</h1>
+    <p class="sub">পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
     <input id="adminPw" type="password" placeholder="এডমিন পাসওয়ার্ড">
     <button id="adminGoBtn">প্রবেশ করুন</button>
     <div class="msg err" id="adminMsg"></div>
@@ -324,7 +326,7 @@ async function loadFolderList(){
       row.className = "folder-item";
       row.innerHTML = `<div>${f.label || d.id}</div>
         <div>
-          <button class="del" data-id="${d.id}" data-act="edit" style="color:var(--accent);">এডিট</button>
+          <button class="del" data-id="${d.id}" data-act="edit" style="color:#2563eb;">এডিট</button>
           <button class="del" data-id="${d.id}" data-act="del">মুছুন</button>
         </div>`;
       listEl.appendChild(row);
