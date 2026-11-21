@@ -2,105 +2,88 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=6, minimum-scale=1, user-scalable=yes, viewport-fit=cover">
 <title>ফটো ভল্ট</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --card:rgba(10,14,20,0.82); --text:#eafff1; --muted:#7ee8a6;
-    --accent:#00ff9d; --accent-text:#031b10; --border:rgba(0,255,157,0.35); --danger:#ff5d5d;
+    --gold:#b8860b; --gold2:#d4af37; --ink:#111318; --muted:#6b7280;
+    --danger:#dc2626; --ok:#16a34a; --line:#ececec;
   }
-  *{box-sizing:border-box;}
-  html,body{min-height:100%;margin:0;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{min-height:100%; margin:0;}
   body{
-    background:#02060a; color:var(--text); overflow-x:hidden; overflow-y:auto;
-    font-family:'Courier New',monospace;
+    font-family:'Hind Siliguri','Poppins',-apple-system,sans-serif;
+    background:#fdfdfd; color:var(--ink);
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
-  #matrix{ position:fixed; inset:0; z-index:0; display:block; pointer-events:none; }
-  .wrap{
-    position:relative; z-index:1; min-height:100vh;
-    display:flex; align-items:center; justify-content:center; padding:20px;
-  }
+  #matrix{ position:fixed; inset:0; z-index:0; }
+  .wrap{ position:relative; z-index:1; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
   .card{
-    background:var(--card); border:1px solid var(--border); border-radius:18px;
-    padding:30px 26px; width:100%; max-width:380px;
-    backdrop-filter:blur(6px); box-shadow:0 0 30px rgba(0,255,157,0.15);
+    background:#ffffff; border:1px solid var(--line); border-radius:22px;
+    padding:34px 26px; width:100%; max-width:400px;
+    box-shadow:0 25px 60px rgba(17,19,24,0.08), 0 2px 8px rgba(17,19,24,0.04);
   }
+  .card.plain{ box-shadow:0 10px 30px rgba(0,0,0,0.06); }
   h1{
-    font-size:20px; margin:0 0 6px; text-align:center; letter-spacing:2px;
-    color:var(--accent); text-shadow:0 0 10px rgba(0,255,157,0.6);
+    font-family:'Poppins',sans-serif; font-size:22px; margin:0 0 6px; text-align:center;
+    color:var(--ink); font-weight:800; letter-spacing:0.3px;
   }
-  p.sub{color:var(--muted); font-size:13px; text-align:center; margin:0 0 22px; opacity:0.85; line-height:1.4;}
+  p.sub{ font-size:13.5px; text-align:center; margin:0 0 22px; color:var(--muted); font-weight:500; }
   input{
-    width:100%; padding:13px 14px; border-radius:10px; border:1px solid var(--border);
-    background:rgba(0,0,0,0.4); color:var(--accent); font-size:16px; margin-bottom:12px;
-    font-family:'Courier New',monospace; letter-spacing:1px;
+    width:100%; padding:14px 16px; border-radius:14px; border:1.5px solid var(--line);
+    background:#fafafa; color:var(--ink); font-size:16px; margin-bottom:11px;
+    font-family:'Hind Siliguri',sans-serif; transition:border-color .15s;
   }
-  input::placeholder{color:rgba(126,232,166,0.5); font-size:14px;}
-  input:focus{outline:none; box-shadow:0 0 0 2px var(--accent);}
+  input:focus{ outline:none; border-color:var(--gold2); background:#fff; }
+  input[type="password"]{ -webkit-text-security:disc; text-security:disc; letter-spacing:4px; font-size:19px; }
+  input::placeholder{ color:#a1a1aa; letter-spacing:normal; font-size:15px; }
   button{
-    width:100%; padding:13px; border-radius:10px; border:none;
-    background:var(--accent); color:var(--accent-text); font-size:15px; font-weight:700;
-    cursor:pointer; margin-top:4px; letter-spacing:1px;
-    box-shadow:0 0 15px rgba(0,255,157,0.4);
+    width:100%; padding:14px; border-radius:14px; border:none; cursor:pointer;
+    background:linear-gradient(135deg,#1a1a1a,#333); color:#fff; font-size:15.5px; font-weight:700;
+    margin-top:4px; font-family:'Poppins',sans-serif; letter-spacing:0.3px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.18);
   }
-  button.secondary{
-    background:transparent; color:var(--muted); font-weight:500; font-size:12px;
-    padding:6px; box-shadow:none; margin-top:0; text-decoration:underline;
+  button.secondary{ background:transparent; box-shadow:none; color:var(--gold); font-weight:600; }
+  button.danger{ background:var(--danger); box-shadow:none; }
+  button.ghost{ background:#f3f4f6; box-shadow:none; color:#333; }
+  .msg{ font-size:13.5px; text-align:center; margin-top:11px; min-height:16px; font-weight:600; }
+  .msg.err{ color:var(--danger); } .msg.ok{ color:var(--ok); }
+  .back{ font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline; }
+  .folder-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-bottom:8px;
   }
-  .msg{font-size:13px; text-align:center; margin-top:12px; min-height:18px; line-height:1.4;}
-  .msg.err{color:var(--danger);}
-  .msg.ok{color:var(--accent);}
-  .row{display:flex; justify-content:flex-end; margin-top:18px;}
-  .folder-item{
-    display:flex; justify-content:space-between; align-items:center;
-    border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:8px;
+  .folder-row .name{ font-size:14.5px; font-weight:700; flex:1; }
+  .folder-row .acts{ display:flex; gap:6px; }
+  .folder-row .acts button{ width:auto; padding:7px 11px; font-size:12px; margin:0; box-shadow:none; }
+  .folder-btn{
+    width:100%; text-align:left; padding:15px 17px; border-radius:14px; border:1.5px solid var(--line);
+    background:#fafafa; color:var(--ink); font-size:15px; margin-bottom:8px; cursor:pointer; font-weight:700;
+    font-family:'Hind Siliguri',sans-serif;
   }
-  .folder-item div{font-size:14px;}
-  .folder-item .del{background:transparent; color:var(--danger); width:auto; padding:4px 10px; margin:0; font-size:13px; box-shadow:none;}
-  hr{border:none; border-top:1px solid var(--border); margin:18px 0;}
-  .back{font-size:13px; color:var(--muted); text-align:center; margin-top:16px; cursor:pointer; text-decoration:underline; line-height:1.4;}
-
-  /* ---- এডমিন মোড: সাদাসিধা, নরমাল ---- */
-  body.admin-mode{ background:#f2f3f5; }
-  .card.plain{
-    background:#ffffff; border:1px solid #e2e4e8; box-shadow:0 2px 14px rgba(0,0,0,0.08);
-    backdrop-filter:none; margin-top:36px;
-  }
-  .card.plain h1{ color:#1a1a1a; text-shadow:none; font-family:-apple-system,sans-serif; }
-  .card.plain p.sub{ color:#777; }
-  .card.plain input{
-    background:#f7f7f8; color:#1a1a1a; font-family:-apple-system,sans-serif; letter-spacing:normal;
-  }
-  .card.plain input::placeholder{ color:#999; }
-  .card.plain button{
-    background:#2563eb; color:#fff; box-shadow:none; font-family:-apple-system,sans-serif;
-  }
-  .card.plain button.secondary, .card.plain .back{ color:#2563eb; text-shadow:none; }
-  .card.plain .folder-item{ border-color:#e2e4e8; color:#1a1a1a; }
   #homeBtn{
     position:fixed; top:14px; left:14px; z-index:9999; display:none;
-    background:#2563eb; color:#fff; border:none; border-radius:20px;
-    padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer;
-    font-family:-apple-system,sans-serif; box-shadow:0 2px 8px rgba(0,0,0,0.15);
-    width:auto; margin:0;
+    background:#1a1a1a; color:#fff; border:none; border-radius:20px;
+    padding:9px 16px; font-size:13px; font-weight:700; box-shadow:0 4px 14px rgba(0,0,0,0.2);
+    font-family:'Poppins',sans-serif;
   }
+  #cornerAdminLink{ position:fixed; bottom:10px; right:14px; z-index:9998; font-size:13px; color:#d4d4d8; cursor:pointer; padding:10px; user-select:none; }
 </style>
 </head>
 <body>
 
 <canvas id="matrix"></canvas>
-<div class="wrap">
-  <div class="card" id="app">
-    <div style="text-align:center;">অপেক্ষা করেন আপনি কোনো নেতা নন...</div>
-  </div>
-</div>
-<div id="cornerAdminLink" style="position:fixed; z-index:9999; pointer-events:auto; font-size:13px; color:rgba(0,255,157,0.55); text-shadow:0 0 6px rgba(0,255,157,0.5); font-family:'Courier New',monospace; cursor:pointer; padding:10px; user-select:none;">admin</div>
-<button id="homeBtn">← আগের জায়গায় যান এটা আপনার বাপের না</button>
+<div class="wrap"><div class="card" id="app"><div style="text-align:center;">লোড হচ্ছে...</div></div></div>
+<div id="cornerAdminLink">·</div>
+<button id="homeBtn">← মূল পেজে ফিরুন</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, limit
+  getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -111,7 +94,6 @@ const firebaseConfig = {
   messagingSenderId: "331515261814",
   appId: "1:331515261814:web:d6465ba76ebebe0acc8057"
 };
-
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 
@@ -121,20 +103,61 @@ async function sha256(text){
 }
 
 const app = document.getElementById("app");
+const wrap = document.querySelector(".wrap");
+const matrixCanvas = document.getElementById("matrix");
+const homeBtn = document.getElementById("homeBtn");
+const adminLink = document.getElementById("cornerAdminLink");
 
+function enterAdminMode(){
+  document.body.style.background = "#f6f6f7";
+  matrixCanvas.style.display = "none";
+  adminLink.style.display = "none";
+  homeBtn.style.display = "block";
+  app.classList.add("plain");
+}
+function exitAdminMode(){
+  document.body.style.background = "#fdfdfd";
+  matrixCanvas.style.display = "block";
+  adminLink.style.display = "block";
+  homeBtn.style.display = "none";
+  app.classList.remove("plain");
+}
+homeBtn.onclick = () => { exitAdminMode(); renderMain(); };
+adminLink.onclick = renderAdminLogin;
+
+/* ---------- মূল পেজ ---------- */
 function renderMain(msg){
   app.innerHTML = `
     <h1>ফটো ভল্ট</h1>
     <p class="sub">পাসওয়ার্ড দিয়ে ফোল্ডার দেখুন</p>
-    <input id="pwInput" type="password" placeholder="পাসওয়ার্ড টা লেখ দয়াকরে" autocomplete="off">
+    <input id="pwInput" type="password" placeholder="পাসওয়ার্ড লিখুন">
     <button id="openBtn">ওপেন করুন</button>
     <div class="msg ${msg && msg.type==='err' ? 'err':'ok'}">${msg ? msg.text : ''}</div>
-    <div id="linkArea"></div>
-    <button class="secondary" id="browseBtn" style="margin-top:14px;">দেখেন এখানে কিছু পেতে পারেন</button>
+    <button class="secondary" id="browseBtn" style="margin-top:10px;">ফোল্ডার তালিকা থেকে খুঁজুন</button>
   `;
   document.getElementById("openBtn").onclick = tryOpenFolder;
   document.getElementById("pwInput").addEventListener("keydown", e=>{ if(e.key==="Enter") tryOpenFolder(); });
   document.getElementById("browseBtn").onclick = renderFolderBrowse;
+}
+
+async function tryOpenFolder(){
+  const pw = document.getElementById("pwInput").value.trim();
+  if(!pw) return;
+  try{
+    const hash = await sha256(pw);
+    const snap = await getDocs(collection(db, "folders"));
+    for(const d of snap.docs){
+      const f = d.data();
+      if(f.passHash === hash){
+        renderMain({type:'ok', text:'তোর পাসওয়ার্ডটি সঠিক হয়েছে! এখনই দেখাচ্ছি তোর ফটোগুলো...'});
+        window.location.href = f.link;
+        return;
+      }
+    }
+    renderMain({type:'err', text:'কিরে, তুই কি চোর নাকি? ভুল পাসওয়ার্ড দিলি! সঠিকটা দে।'});
+  }catch(e){
+    renderMain({type:'err', text:'সমস্যা হয়েছে, আবার চেষ্টা করুন।'});
+  }
 }
 
 async function renderFolderBrowse(){
@@ -142,55 +165,46 @@ async function renderFolderBrowse(){
     <h1>ফোল্ডার তালিকা</h1>
     <p class="sub">কাঙ্ক্ষিত ফোল্ডারে ক্লিক করুন</p>
     <div id="browseList"><p class="sub">লোড হচ্ছে...</p></div>
-    <div class="back" id="browseBack">আগের জায়গায় যা এটা কি তর বাপের জায়গা</div>
+    <div class="back" id="browseBack">মূল পেজে ফিরে যান</div>
   `;
-  document.getElementById("browseBack").onclick = () => renderMain();
+  document.getElementById("browseBack").onclick = renderMain;
   const listEl = document.getElementById("browseList");
   try{
     const snap = await getDocs(collection(db, "folders"));
-    if(snap.empty){
-      listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`;
-      return;
-    }
+    if(snap.empty){ listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`; return; }
     listEl.innerHTML = "";
     snap.forEach(d=>{
       const f = d.data();
       const btn = document.createElement("button");
+      btn.className = "folder-btn";
       btn.textContent = f.label || d.id;
-      btn.style.marginBottom = "8px";
-      btn.onclick = () => renderFolderPasswordScreen(d.id, f);
+      btn.onclick = () => renderFolderPasswordScreen(f);
       listEl.appendChild(btn);
     });
-  }catch(e){
-    listEl.innerHTML = `<p class="sub">লোড করা যায়নি।</p>`;
-  }
+  }catch(e){ listEl.innerHTML = `<p class="sub">লোড করা যায়নি।</p>`; }
 }
 
-function renderFolderPasswordScreen(folderId, f){
+function renderFolderPasswordScreen(f){
   app.innerHTML = `
-    <h1>${f.label || folderId}</h1>
-    <p class="sub">এই ফোল্ডারের পাসওয়ার্ড দে নয়লে ডুকতে পাবিনা</p>
-    <input id="fpwInput" type="password" placeholder="পাসওয়ার্ড লিখুন" autocomplete="off">
-    <button id="fpwOpenBtn">খুল এখন</button>
+    <h1>${f.label}</h1>
+    <p class="sub">এই ফোল্ডারের পাসওয়ার্ড দিন</p>
+    <input id="fpwInput" type="password" placeholder="পাসওয়ার্ড লিখুন">
+    <button id="fpwOpenBtn">ওপেন করুন</button>
     <div class="msg err" id="fpwMsg"></div>
-    ${f.hint ? `<button class="secondary" id="hintBtn" style="margin-top:10px;">হিন্ট দেখুন</button><div class="msg ok" id="hintText" style="display:none;"></div>` : ''}
-    <div class="back" id="fpwBack">ফোল্ডার তালিকায় ফিরত যা তর বাপের না এই জায়গা</div>
+    ${f.hint ? `<button class="secondary" id="hintBtn" style="margin-top:8px;">পাসওয়ার্ড না জানলে হিন্ট দেখ</button><div class="msg ok" id="hintText" style="display:none;"></div>` : ''}
+    <div class="back" id="fpwBack">ফোল্ডার তালিকায় ফিরে যান</div>
   `;
   document.getElementById("fpwBack").onclick = renderFolderBrowse;
   const tryIt = async () => {
     const pw = document.getElementById("fpwInput").value.trim();
     const msgEl = document.getElementById("fpwMsg");
     if(!pw) return;
-    try{
-      const hash = await sha256(pw);
-      if(hash === f.passHash){
-        msgEl.className = "msg ok"; msgEl.textContent = "পাসওয়ার্ড ঠিক আছে ! তর ফোল্ডার এ নিয়ে যাওয়া হচ্ছে...";
-        window.location.href = f.link;
-      }else{
-        msgEl.className = "msg err"; msgEl.textContent = "পাসওয়ার্ড মিলেনি কেন 🤔 তুই চোর নয়তো ।";
-      }
-    }catch(e){
-      msgEl.className = "msg err"; msgEl.textContent = "জারোর কোচ না কোচ গারাবর হে দয়া ।";
+    const hash = await sha256(pw);
+    if(hash === f.passHash){
+      msgEl.className = "msg ok"; msgEl.textContent = "তোর পাসওয়ার্ডটি সঠিক হয়েছে! এখনই দেখাচ্ছি তোর ফটোগুলো...";
+      window.location.href = f.link;
+    }else{
+      msgEl.className = "msg err"; msgEl.textContent = "কিরে, তুই কি চোর নাকি? ভুল পাসওয়ার্ড দিলি! সঠিকটা দে।";
     }
   };
   document.getElementById("fpwOpenBtn").onclick = tryIt;
@@ -198,73 +212,21 @@ function renderFolderPasswordScreen(folderId, f){
   if(f.hint){
     document.getElementById("hintBtn").onclick = () => {
       const h = document.getElementById("hintText");
-      h.style.display = "block";
-      h.textContent = f.hint;
+      h.style.display = "block"; h.textContent = f.hint;
     };
   }
 }
 
-const matrixCanvas = document.getElementById("matrix");
-const homeBtn = document.getElementById("homeBtn");
-function enterAdminMode(){
-  document.body.classList.add("admin-mode");
-  matrixCanvas.style.display = "none";
-  document.getElementById("cornerAdminLink").style.display = "none";
-  homeBtn.style.display = "block";
-  app.classList.add("plain");
-}
-function exitAdminMode(){
-  document.body.classList.remove("admin-mode");
-  matrixCanvas.style.display = "block";
-  document.getElementById("cornerAdminLink").style.display = "block";
-  homeBtn.style.display = "none";
-  app.classList.remove("plain");
-}
-homeBtn.onclick = () => { exitAdminMode(); renderMain(); };
-
-const adminLink = document.getElementById("cornerAdminLink");
-adminLink.addEventListener("click", (e) => { e.preventDefault(); renderAdminLogin(); });
-adminLink.addEventListener("touchend", (e) => { e.preventDefault(); renderAdminLogin(); });
-
-function moveAdminLink(){
-  const margin = 20;
-  const w = window.innerWidth, h = window.innerHeight;
-  const x = margin + Math.random() * Math.max(10, w - margin*2 - 60);
-  const y = margin + Math.random() * Math.max(10, h - margin*2 - 40);
-  adminLink.style.left = x + "px";
-  adminLink.style.top = y + "px";
-}
-moveAdminLink();
-setInterval(moveAdminLink, 4000);
-
-async function tryOpenFolder(){
-  const pw = document.getElementById("pwInput").value.trim();
-  if(!pw) return;
-  try{
-    const hash = await sha256(pw);
-    const q = query(collection(db, "folders"), where("passHash","==",hash), limit(1));
-    const snap = await getDocs(q);
-    if(!snap.empty){
-      const f = snap.docs[0].data();
-      renderMain({type:'ok', text:'পাসওয়ার্ড ঠিক আছে! তর ফোল্ডার এ নিয়ে যাওয়া হচ্ছে...'});
-      window.location.href = f.link;
-    }else{
-      renderMain({type:'err', text:'পাসওয়ার্ড মেলেনি কেন 🤔 তুই আবার চুর নয়তো।'});
-    }
-  }catch(e){
-    renderMain({type:'err', text:'কিছু তো একটা হয়েছে , আবার চেষ্টা কর ।'});
-  }
-}
-
+/* ---------- এডমিন লগইন ---------- */
 function renderAdminLogin(){
   enterAdminMode();
   app.innerHTML = `
-    <h1>মালিকানাধীন</h1>
-    <p class="sub">পাসওয়ার্ড দিন (প্রথমবার হলে নতুন পাসওয়ার্ড সেট হবে)</p>
-    <input id="adminPw" type="password" placeholder="এডমিন পাসওয়ার্ড">
+    <h1>মালিকের পাসওয়ার্ড</h1>
+    <p class="sub">শুধু মালিকের জন্য</p>
+    <input id="adminPw" type="password" placeholder="মালিকের পাসওয়ার্ড">
     <button id="adminGoBtn">প্রবেশ করুন</button>
     <div class="msg err" id="adminMsg"></div>
-    <div class="back" id="backBtn">ফিরত যা</div>
+    <div class="back" id="backBtn">মূল পেজে ফিরে যান</div>
   `;
   document.getElementById("backBtn").onclick = () => { exitAdminMode(); renderMain(); };
   document.getElementById("adminGoBtn").onclick = adminLogin;
@@ -281,33 +243,26 @@ async function adminLogin(){
     const snap = await getDoc(ref);
     if(!snap.exists() || !snap.data().passHash){
       await setDoc(ref, { passHash: hash });
-      renderAdminPanel();
+      renderAdminDashboard();
     }else if(snap.data().passHash === hash){
-      renderAdminPanel();
+      renderAdminDashboard();
     }else{
-      msgEl.textContent = "তুই কি চোর তাহলে পাসওয়ার্ড ভুল কেন।";
+      msgEl.textContent = "এটা মালিকের পাসওয়ার্ড না, আবার চেষ্টা কর।";
     }
-  }catch(e){
-    msgEl.textContent = "সমস্যা হয়েছে, আবার চেষ্টা কর।";
-  }
+  }catch(e){ msgEl.textContent = "সমস্যা হয়েছে, আবার চেষ্টা করুন।"; }
 }
 
-function renderAdminPanel(){
+/* ---------- এডমিন ড্যাশবোর্ড ---------- */
+async function renderAdminDashboard(){
   app.innerHTML = `
     <h1>এডমিন প্যানেল</h1>
+    <p class="sub">সব ফোল্ডার</p>
     <div id="folderList"><p class="sub">লোড হচ্ছে...</p></div>
-    <hr>
-    <p class="sub" style="margin-bottom:8px;">নতুন ফোল্ডার যোগ করুন</p>
-    <input id="newLabel" placeholder="নাম (যেমন: জুনাইদ এর ছবি)">
-    <input id="newPw" placeholder="পাসওয়ার্ড">
-    <input id="newLink" placeholder="ব্লগার লিংক">
-    <input id="newHint" placeholder="হিন্ট (ঐচ্ছিক)">
-    <button id="addBtn">যোগ করুন</button>
-    <div class="msg" id="addMsg"></div>
-    <div class="back" id="backBtn2">আগের জায়গায় যা</div>
+    <button id="addNewBtn">+ নতুন ফোল্ডার যোগ করুন</button>
+    <button class="ghost" id="changeAdminPwBtn" style="margin-top:10px;">এডমিন পাসওয়ার্ড পরিবর্তন করুন</button>
   `;
-  document.getElementById("backBtn2").onclick = () => { exitAdminMode(); renderMain(); };
-  document.getElementById("addBtn").onclick = addFolder;
+  document.getElementById("addNewBtn").onclick = renderAddFolderScreen;
+  document.getElementById("changeAdminPwBtn").onclick = renderChangeAdminPassword;
   loadFolderList();
 }
 
@@ -315,124 +270,136 @@ async function loadFolderList(){
   const listEl = document.getElementById("folderList");
   try{
     const snap = await getDocs(collection(db, "folders"));
-    if(snap.empty){
-      listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`;
-      return;
-    }
+    if(snap.empty){ listEl.innerHTML = `<p class="sub">কোনো ফোল্ডার নেই।</p>`; return; }
     listEl.innerHTML = "";
     snap.forEach(d=>{
       const f = d.data();
       const row = document.createElement("div");
-      row.className = "folder-item";
-      row.innerHTML = `<div>${f.label || d.id}</div>
-        <div>
-          <button class="del" data-id="${d.id}" data-act="edit" style="color:#2563eb;">এডিট</button>
-          <button class="del" data-id="${d.id}" data-act="del">মুছুন</button>
+      row.className = "folder-row";
+      row.innerHTML = `<div class="name">${f.label || d.id}</div>
+        <div class="acts">
+          <button class="ghost" data-act="edit">এডিট</button>
+          <button class="danger" data-act="del">মুছুন</button>
         </div>`;
+      row.querySelector("[data-act='edit']").onclick = () => renderEditFolderScreen(d.id, f);
+      row.querySelector("[data-act='del']").onclick = async () => {
+        if(confirm(`"${f.label}" ফোল্ডারটি মুছে ফেলতে চান?`)){
+          await deleteDoc(doc(db, "folders", d.id));
+          loadFolderList();
+        }
+      };
       listEl.appendChild(row);
     });
-    listEl.querySelectorAll("[data-act='del']").forEach(btn=>{
-      btn.onclick = async ()=>{
-        try{ await deleteDoc(doc(db, "folders", btn.dataset.id)); loadFolderList(); }catch(e){}
-      };
-    });
-    listEl.querySelectorAll("[data-act='edit']").forEach(btn=>{
-      btn.onclick = () => openEditForm(btn.dataset.id);
-    });
-  }catch(e){
-    listEl.innerHTML = `<p class="sub">ফোল্ডার লোড করা যায়নি।</p>`;
-  }
+  }catch(e){ listEl.innerHTML = `<p class="sub">লোড করা যায়নি।</p>`; }
 }
 
-async function openEditForm(folderId){
-  const listEl = document.getElementById("folderList");
-  try{
-    const snap = await getDoc(doc(db, "folders", folderId));
-    if(!snap.exists()) return;
-    const f = snap.data();
-    listEl.innerHTML = `
-      <p class="sub" style="margin-bottom:8px;">এডিট করুন: ${f.label || folderId}</p>
-      <input id="editLabel" value="${f.label || ''}" placeholder="নাম">
-      <input id="editPw" placeholder="নতুন পাসওয়ার্ড (খালি রাখলে আগেরটাই থাকবে)">
-      <input id="editLink" value="${f.link || ''}" placeholder="ব্লগার লিংক">
-      <input id="editHint" value="${f.hint || ''}" placeholder="হিন্ট (ঐচ্ছিক)">
-      <button id="saveEditBtn">সেভ করুন</button>
-      <div class="msg" id="editMsg"></div>
-      <div class="back" id="cancelEditBtn">বাতিল করুন</div>
-    `;
-    document.getElementById("cancelEditBtn").onclick = loadFolderList;
-    document.getElementById("saveEditBtn").onclick = async () => {
-      const msgEl = document.getElementById("editMsg");
-      const label = document.getElementById("editLabel").value.trim();
-      const link = document.getElementById("editLink").value.trim();
-      const hint = document.getElementById("editHint").value.trim();
-      const newPw = document.getElementById("editPw").value.trim();
-      try{
-        const update = { label, link, hint, passHash: f.passHash };
-        if(newPw){ update.passHash = await sha256(newPw); }
-        await setDoc(doc(db, "folders", folderId), update);
-        msgEl.className = "msg ok"; msgEl.textContent = "সেভ হয়েছে!";
-        setTimeout(loadFolderList, 600);
-      }catch(e){
-        msgEl.className = "msg err"; msgEl.textContent = "সেভ করা যায়নি।";
-      }
-    };
-  }catch(e){}
+/* ---------- নতুন ফোল্ডার যোগ করুন (আলাদা স্ক্রিন) ---------- */
+function renderAddFolderScreen(){
+  app.innerHTML = `
+    <h1>নতুন ফোল্ডার</h1>
+    <p class="sub">নাম, পাসওয়ার্ড ও লিংক দিন</p>
+    <input id="fLabel" placeholder="নাম (যেমন: রাহিমের ছবি)">
+    <input id="fPw" placeholder="পাসওয়ার্ড">
+    <input id="fLink" placeholder="ব্লগার লিংক">
+    <input id="fHint" placeholder="হিন্ট (ঐচ্ছিক)">
+    <button id="saveNewBtn">সেভ করুন</button>
+    <div class="msg" id="newMsg"></div>
+    <div class="back" id="cancelNewBtn">বাতিল করুন</div>
+  `;
+  document.getElementById("cancelNewBtn").onclick = renderAdminDashboard;
+  document.getElementById("saveNewBtn").onclick = async () => {
+    const label = document.getElementById("fLabel").value.trim();
+    const pw = document.getElementById("fPw").value.trim();
+    const link = document.getElementById("fLink").value.trim();
+    const hint = document.getElementById("fHint").value.trim();
+    const msgEl = document.getElementById("newMsg");
+    if(!label || !pw || !link){ msgEl.className="msg err"; msgEl.textContent="সবগুলো ঘর পূরণ করুন।"; return; }
+    try{
+      const passHash = await sha256(pw);
+      const slug = "f" + Date.now();
+      await setDoc(doc(db, "folders", slug), { label, passHash, link, hint });
+      renderAdminDashboard();
+    }catch(e){ msgEl.className="msg err"; msgEl.textContent="সেভ করা যায়নি।"; }
+  };
 }
 
-async function addFolder(){
-  const label = document.getElementById("newLabel").value.trim();
-  const pw = document.getElementById("newPw").value.trim();
-  const link = document.getElementById("newLink").value.trim();
-  const hint = document.getElementById("newHint").value.trim();
-  const msgEl = document.getElementById("addMsg");
-  if(!label || !pw || !link){ msgEl.className="msg err"; msgEl.textContent="সবগুলো ঘর পূরণ করুন।"; return; }
-  try{
-    const hash = await sha256(pw);
-    const slug = "f" + Date.now();
-    await setDoc(doc(db, "folders", slug), { label, passHash: hash, link, hint });
-    msgEl.className="msg ok"; msgEl.textContent="যোগ হয়েছে!";
-    document.getElementById("newLabel").value="";
-    document.getElementById("newPw").value="";
-    document.getElementById("newLink").value="";
-    document.getElementById("newHint").value="";
-    loadFolderList();
-  }catch(e){
-    msgEl.className="msg err"; msgEl.textContent="যোগ করা যায়নি।";
-  }
+/* ---------- ফোল্ডার এডিট (আলাদা স্ক্রিন) ---------- */
+function renderEditFolderScreen(folderId, f){
+  app.innerHTML = `
+    <h1>এডিট করুন</h1>
+    <p class="sub">${f.label}</p>
+    <input id="eLabel" value="${f.label || ''}" placeholder="নাম">
+    <input id="ePw" placeholder="নতুন পাসওয়ার্ড (খালি রাখলে আগেরটাই থাকবে)">
+    <input id="eLink" value="${f.link || ''}" placeholder="ব্লগার লিংক">
+    <input id="eHint" value="${f.hint || ''}" placeholder="হিন্ট (ঐচ্ছিক)">
+    <button id="saveEditBtn">সেভ করুন</button>
+    <div class="msg" id="editMsg"></div>
+    <div class="back" id="cancelEditBtn">বাতিল করুন</div>
+  `;
+  document.getElementById("cancelEditBtn").onclick = renderAdminDashboard;
+  document.getElementById("saveEditBtn").onclick = async () => {
+    const label = document.getElementById("eLabel").value.trim();
+    const link = document.getElementById("eLink").value.trim();
+    const hint = document.getElementById("eHint").value.trim();
+    const newPw = document.getElementById("ePw").value.trim();
+    const msgEl = document.getElementById("editMsg");
+    try{
+      const passHash = newPw ? await sha256(newPw) : f.passHash;
+      await setDoc(doc(db, "folders", folderId), { label, link, hint, passHash });
+      renderAdminDashboard();
+    }catch(e){ msgEl.className="msg err"; msgEl.textContent="সেভ করা যায়নি।"; }
+  };
+}
+
+/* ---------- এডমিন পাসওয়ার্ড পরিবর্তন ---------- */
+function renderChangeAdminPassword(){
+  app.innerHTML = `
+    <h1>এডমিন পাসওয়ার্ড পরিবর্তন</h1>
+    <p class="sub">নতুন এডমিন পাসওয়ার্ড দিন</p>
+    <input id="newAdminPw" type="password" placeholder="নতুন পাসওয়ার্ড">
+    <input id="confirmAdminPw" type="password" placeholder="আবার লিখুন">
+    <button id="saveAdminPwBtn">সেভ করুন</button>
+    <div class="msg" id="adminPwMsg"></div>
+    <div class="back" id="cancelAdminPwBtn">বাতিল করুন</div>
+  `;
+  document.getElementById("cancelAdminPwBtn").onclick = renderAdminDashboard;
+  document.getElementById("saveAdminPwBtn").onclick = async () => {
+    const p1 = document.getElementById("newAdminPw").value.trim();
+    const p2 = document.getElementById("confirmAdminPw").value.trim();
+    const msgEl = document.getElementById("adminPwMsg");
+    if(!p1 || p1 !== p2){ msgEl.className="msg err"; msgEl.textContent="দুটো পাসওয়ার্ড মিলছে না।"; return; }
+    try{
+      const passHash = await sha256(p1);
+      await setDoc(doc(db, "admin", "config"), { passHash });
+      msgEl.className="msg ok"; msgEl.textContent="এডমিন পাসওয়ার্ড বদলানো হয়েছে!";
+      setTimeout(renderAdminDashboard, 800);
+    }catch(e){ msgEl.className="msg err"; msgEl.textContent="সেভ করা যায়নি।"; }
+  };
 }
 
 renderMain();
 
-// ---- ম্যাট্রিক্স ব্যাকগ্রাউন্ড অ্যানিমেশন ----
+/* ---- ম্যাট্রিক্স ব্যাকগ্রাউন্ড ---- */
 (function(){
-  const canvas = document.getElementById("matrix");
+  const canvas = matrixCanvas;
   const ctx = canvas.getContext("2d");
   let w, h, cols, drops;
-  const chars = "01アイウエオカキクケコサシスセソタチツテト".split("");
-
+  const chars = "01アイウエオカキクケコ".split("");
   function resize(){
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-    cols = Math.floor(w / 16);
-    drops = new Array(cols).fill(1);
+    w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight;
+    cols = Math.floor(w / 18); drops = new Array(cols).fill(1);
   }
-  window.addEventListener("resize", resize);
-  resize();
-
+  window.addEventListener("resize", resize); resize();
   function draw(){
-    ctx.fillStyle = "rgba(2,6,10,0.08)";
-    ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = "#00ff9d";
-    ctx.font = "14px monospace";
-    for(let i=0; i<drops.length; i++){
-      const text = chars[Math.floor(Math.random()*chars.length)];
-      ctx.fillText(text, i*16, drops[i]*16);
-      if(drops[i]*16 > h && Math.random() > 0.975){ drops[i] = 0; }
+    ctx.fillStyle = "rgba(253,253,253,0.12)"; ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = "rgba(184,134,11,0.18)"; ctx.font = "14px monospace";
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*18, drops[i]*18);
+      if(drops[i]*18 > h && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     }
   }
-  setInterval(draw, 50);
+  setInterval(draw, 60);
 })();
 </script>
 </body>
